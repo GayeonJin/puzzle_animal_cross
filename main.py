@@ -52,6 +52,105 @@ def run_game() :
 
     board.shuffle()
     state = STATE_IDLE
+    next_state = STATE_CHECK_ALL
+
+    edit_exit = False
+    while not edit_exit :
+
+        state = next_state
+
+        for event in pygame.event.get() :
+            if event.type == pygame.QUIT :
+                edit_exit = True
+
+            if event.type == pygame.KEYUP :
+                if event.key == pygame.K_UP:
+                    direction = CURSOR_MOVE_UP
+                elif event.key == pygame.K_DOWN :
+                    direction = CURSOR_MOVE_DOWN
+                elif event.key == pygame.K_LEFT :
+                    direction = CURSOR_MOVE_LEFT
+                elif event.key == pygame.K_RIGHT :
+                    direction = CURSOR_MOVE_RIGHT
+                elif event.key == pygame.K_1 :
+                    state = STATE_CLEAR
+                elif event.key == pygame.K_5 :
+                    state = STATE_COMBO                    
+                elif event.key == pygame.K_9 :
+                    state = STATE_CHECK_ALL
+                elif event.key == pygame.K_x :
+                    return
+            elif event.type == pygame.MOUSEBUTTONDOWN :
+                mouse_pos = pygame.mouse.get_pos()
+                x, y = board.get_pos(mouse_pos)
+            elif event.type == pygame.MOUSEBUTTONUP :
+                mouse_pos = pygame.mouse.get_pos()
+                next_x, next_y = board.get_pos(mouse_pos)
+                if x != None or y != None :
+                    if board.swap((x, y), (next_x, next_y)) :
+                        is_next = board.check_values((next_x, next_y))
+                        is_cur = board.check_values((x, y))
+
+                        if is_next or is_cur :
+                            cursor.set_pos(next_x, next_y)
+                            next_state = STATE_CLEAR 
+                        else :
+                            board.swap((x, y), (next_x, next_y)) 
+
+        if state == STATE_CLEAR :
+            # clear item and make effect
+            board.clear()
+            next_state = STATE_REMOVE
+        if state == STATE_REMOVE :
+            # remove item
+            board.remove()
+            next_state = STATE_MOVE_DOWN
+        elif state == STATE_MOVE_DOWN :
+            # move down block
+            board.move_down()
+            next_state = STATE_FILL
+        elif state == STATE_FILL :
+            # fill empty cells
+            if board.fill_row() == False :
+                next_state = STATE_CHECK_ALL
+            else :
+                next_state = STATE_FILL
+        elif state == STATE_COMBO :
+            # Check combo
+            board.do_combo()
+            next_state = STATE_IDLE                        
+        elif state == STATE_CHECK_ALL :
+            # check all reaa
+            if board.check_area() == False :
+                next_state = STATE_IDLE
+            else :
+                next_state = STATE_CLEAR
+
+        state = 0
+
+        # Clear gamepad
+        gctrl.gamepad.fill(COLOR_WHITE)
+
+        # Draw board
+        board.draw()
+
+        # Draw cursor
+        cursor.draw_rect(COLOR_BLACK, 1)
+
+        pygame.display.update()
+        clock.tick(60)
+
+def test_game() :
+    global clock
+    global board
+
+    cursor = cursor_object(board)
+
+    cursor.x = 0
+    cursor.y = 0
+
+    board.shuffle()
+    state = STATE_IDLE
 
     edit_exit = False
     while not edit_exit :
@@ -142,6 +241,7 @@ def start_game() :
     gctrl.gamepad.blit(text_suf, text_rect)
 
     help_str = ['r : run game',
+                't : test game',
                 'x : exit']
 
     font1 = pygame.font.SysFont(None, 25)
@@ -161,6 +261,8 @@ def start_game() :
                     terminate()
                 elif event.key == pygame.K_r :
                     return 'run'
+                elif event.key == pygame.K_t :
+                    return 'test'
                 elif event.key == pygame.K_x :
                     terminate()
 
@@ -188,5 +290,8 @@ if __name__ == '__main__' :
 
     while True :
         mode = start_game()
+        print(mode)
         if mode == 'run' :
             run_game()
+        elif mode == 'test' :
+            test_game()

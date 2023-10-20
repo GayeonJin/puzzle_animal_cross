@@ -241,6 +241,11 @@ class game_board :
         if debug_ctrl['check_area'] == True :    
             print('remove areas :', remove_area)
 
+        if remove_area == 0 :
+            return False
+        else :
+            return True    
+
     def clear(self) :
         if debug_ctrl['clear'] == True :
             print('clear', self.remove_list)
@@ -303,7 +308,7 @@ class game_board :
             down_cols = range(self.cols)
             self.move_down(down_cols)
         else :
-            print('there is no empty cell')
+            print('there is no empty tile')
 
         return is_fill
         
