@@ -21,10 +21,11 @@ TITLE_STR = 'Animal Cross'
 
 STATE_IDLE = 0
 STATE_CHECK_ALL = 9
-STATE_REMOVE = 1
-STATE_MOVE_DOWN = 2
-STATE_FILL = 3
-STATE_COMBO = 4 
+STATE_CLEAR = 1
+STATE_REMOVE = 2
+STATE_MOVE_DOWN = 3
+STATE_FILL = 4
+STATE_COMBO = 5 
 
 def draw_message(str) :
     font = pygame.font.Font('freesansbold.ttf', 40)
@@ -68,13 +69,15 @@ def run_game() :
                 elif event.key == pygame.K_RIGHT :
                     direction = CURSOR_MOVE_RIGHT
                 elif event.key == pygame.K_1 :
-                    state = STATE_REMOVE
+                    state = STATE_CLEAR
                 elif event.key == pygame.K_2 :
-                    state = STATE_MOVE_DOWN
+                    state = STATE_REMOVE
                 elif event.key == pygame.K_3 :
-                    state = STATE_FILL
+                    state = STATE_MOVE_DOWN
                 elif event.key == pygame.K_4 :
-                    state = STATE_COMBO
+                    state = STATE_FILL
+                elif event.key == pygame.K_5 :
+                    state = STATE_COMBO                    
                 elif event.key == pygame.K_9 :
                     state = STATE_CHECK_ALL
                 elif event.key == pygame.K_x :
@@ -94,7 +97,10 @@ def run_game() :
                             cursor.set_pos(next_x, next_y)
                         else :
                             board.swap((x, y), (next_x, next_y)) 
-        
+
+        if state == STATE_CLEAR :
+            # clear item and make effect
+            board.clear()        
         if state == STATE_REMOVE :
             # remove item
             board.remove()
@@ -170,8 +176,8 @@ def init_game() :
 
     # board
     board = game_board(MAX_ROWS, MAX_COLS)
-    for i, resource_key in enumerate(resource_map_item) :
-        board.add_objet(resource_key, game_object(0, 0, get_map_resource(resource_key)))
+    for i, resource_key in enumerate(resource_tile_item) :
+        board.add_objet(resource_key, game_object(0, 0, get_tile_resource(resource_key)))
 
     (pad_width, pad_height) = board.get_padsize()
     gctrl.set_param(pygame.display.set_mode((pad_width, pad_height)), pad_width, pad_height)

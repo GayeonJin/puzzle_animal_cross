@@ -27,7 +27,7 @@ check_dirs = [BOARD_LEFT, BOARD_RIGHT, BOARD_UP, BOARD_DOWN]
 
 SAME_THRESHOLD = 3
 
-SOUND = False
+SOUND = True
 
 board_dict = {
     1 : ['id_bear'],
@@ -36,12 +36,13 @@ board_dict = {
     4 : ['id_fox'],  
     5 : ['id_koala'],
     6 : ['id_koki'],
-    7 : ['id_little-lion'],    
+    7 : ['id_little_lion'],    
 }
 
 debug_ctrl = {
     'check_area' : True,
     'checks_values' : True,
+    'clear' : True,
     'remove' : True,
     'move_down' : True,
     'do_combo' : True 
@@ -70,14 +71,17 @@ class game_board :
         self.combo = []
         self.combo_count = 0
 
+        # effect resource
+        self.effect_boot = pygame.image.load(get_img_resource('id_boom'))
+
         # sound resource
         self.snd_shot = pygame.mixer.Sound(get_snd_resource('snd_shot'))
         self.snd_explosion = pygame.mixer.Sound(get_snd_resource('snd_explosion'))
 
-    def add_objet(self, key, map_object) :
-        self.object[key] = map_object
-        self.obj_width = map_object.width 
-        self.obj_height = map_object.height
+    def add_objet(self, key, tile_object) :
+        self.object[key] = tile_object
+        self.obj_width = tile_object.width 
+        self.obj_height = tile_object.height
 
     def get_size(self) :
         return self.rows, self.cols
@@ -193,6 +197,22 @@ class game_board :
             print('too small')
             return False
         
+        same_x = 0
+        same_y = 0
+        if len(saved) == SAME_THRESHOLD :
+            (x, y) = saved[0]
+            for i in range(1, len(saved)) :
+                (x1, y1) = saved[i]
+                if x == x1 : 
+                    same_x += 1
+                if y == y1 :
+                    same_y += 1
+
+            print('same count', (same_x, same_y))
+            if (same_x < SAME_THRESHOLD - 1) and (same_y < SAME_THRESHOLD - 1) :
+                print('not continue')
+                return False
+
         for save in saved :
             self.remove_list.append(save)
 
@@ -221,6 +241,16 @@ class game_board :
         if debug_ctrl['check_area'] == True :    
             print('remove areas :', remove_area)
 
+    def clear(self) :
+        if debug_ctrl['clear'] == True :
+            print('clear', self.remove_list)
+
+        for (x, y) in self.remove_list :
+            self.map[x][y] = 0xFF
+
+            if SOUND :
+                self.snd_shot.play()   
+
     def remove(self) :
         if debug_ctrl['remove'] == True :
             print('remove', self.remove_list)
@@ -233,11 +263,8 @@ class game_board :
 
             remove_count += 1
             if x not in self.remove_columns :
-                self.remove_columns.append(x)
+                self.remove_columns.append(x)     
 
-            if SOUND :
-                self.snd_shot.play()
-        
     def move_down(self, cols = []) :
         if cols == [] :
             cols = self.remove_columns
@@ -288,11 +315,14 @@ class game_board :
         for y in range(self.rows) :
             for x in range(self.cols) :
                 if self.map[x][y] != 0 :
-                    keys = board_dict[self.map[x][y]]
-                    if keys != None :
-                        for key in keys :
-                            if key != 0 :
-                                self.object[key].draw(rect)
+                    if self.map[x][y] != 0xFF :
+                        keys = board_dict[self.map[x][y]]
+                        if keys != None :
+                            for key in keys :
+                                if key != 0 :
+                                    self.object[key].draw(rect)
+                    else :
+                        gctrl.gamepad.blit(self.effect_boot, rect)
                 else :
                     pygame.draw.rect(gctrl.gamepad, COLOR_RED, rect, 1, 1)
 
