@@ -7,17 +7,6 @@ from time import sleep
 
 from gresource import *
 
-class game_ctrl :
-    def __init__(self) :
-        self.gamepad = None 
-        self.pad_width = 640
-        self.pad_height = 320
-
-    def set_param(self, pad, width, height) :
-        self.gamepad = pad
-        self.pad_width = width
-        self.pad_height = height
-
 class game_object :
     global gctrl
 
@@ -49,22 +38,22 @@ class game_object :
 
         if self.y < 0 :
             self.y = 0
-        elif self.y > (gctrl.pad_height - self.height) :
-            self.y = (gctrl.pad_height - self.height)
+        elif self.y > (gctrl.height - self.height) :
+            self.y = (gctrl.height - self.height)
 
         self.ex = self.x + self.width - 1
         self.ey = self.y + self.height - 1
 
     def draw(self) :
         if self.object != None :
-            gctrl.gamepad.blit(self.object, (self.x, self.y))
+            gctrl.surface.blit(self.object, (self.x, self.y))
 
     def draw(self, rect) :
         if self.object != None :
-            gctrl.gamepad.blit(self.object, rect)
+            gctrl.surface.blit(self.object, rect)
 
     def is_out_of_range(self) :
-        if self.x <= 0 or self.x >= gctrl.pad_width :
+        if self.x <= 0 or self.x >= gctrl.width :
             return True
         else :
             return False
@@ -98,7 +87,5 @@ class game_object :
                     return True
         return False
 
-gctrl = game_ctrl()
-
 if __name__ == '__main__' :
-    print('game control and object')
+    print('game object')

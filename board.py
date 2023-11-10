@@ -27,7 +27,7 @@ check_dirs = [BOARD_LEFT, BOARD_RIGHT, BOARD_UP, BOARD_DOWN]
 
 SAME_THRESHOLD = 3
 
-SOUND = True
+SOUND = False
 
 board_dict = {
     1 : ['id_bear'],
@@ -70,6 +70,8 @@ class game_board :
 
         self.combo = []
         self.combo_count = 0
+
+        self.score = 0
 
         # effect resource
         self.effect_boot = pygame.image.load(get_img_resource('id_boom'))
@@ -327,9 +329,9 @@ class game_board :
                                 if key != 0 :
                                     self.object[key].draw(rect)
                     else :
-                        gctrl.gamepad.blit(self.effect_boot, rect)
+                        gctrl.surface.blit(self.effect_boot, rect)
                 else :
-                    pygame.draw.rect(gctrl.gamepad, COLOR_RED, rect, 1, 1)
+                    pygame.draw.rect(gctrl.surface, COLOR_RED, rect, 1, 1)
 
                 rect.x += self.obj_width
             rect.y -= self.obj_height

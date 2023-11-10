@@ -17,7 +17,7 @@ from gobject import *
 from board import *
 from cursor import *
 
-TITLE_STR = 'Animal Cross'
+TITLE_STR = 'Animal Cross Puzzle'
 
 STATE_IDLE = 0
 STATE_CHECK_ALL = 9
@@ -31,9 +31,9 @@ def draw_message(str) :
     font = pygame.font.Font('freesansbold.ttf', 40)
     text_suf = font.render(str, True, COLOR_BLACK)
     text_rect = text_suf.get_rect()
-    text_rect.center = ((gctrl.pad_width / 2), (gctrl.pad_height / 2))
+    text_rect.center = ((gctrl.width / 2), (gctrl.height / 2))
 
-    gctrl.gamepad.blit(text_suf, text_rect)
+    gctrl.surface.blit(text_suf, text_rect)
     pygame.display.update()
     sleep(2)
 
@@ -78,6 +78,8 @@ def run_game() :
                     state = STATE_COMBO                    
                 elif event.key == pygame.K_9 :
                     state = STATE_CHECK_ALL
+                elif event.key == pygame.K_F10 :
+                    gctrl.save_scr_capture(TITLE_STR)
                 elif event.key == pygame.K_x :
                     return
             elif event.type == pygame.MOUSEBUTTONDOWN :
@@ -129,7 +131,7 @@ def run_game() :
         state = 0
 
         # Clear gamepad
-        gctrl.gamepad.fill(COLOR_WHITE)
+        gctrl.surface.fill(COLOR_WHITE)
 
         # Draw board
         board.draw()
@@ -219,7 +221,7 @@ def test_game() :
         state = 0
 
         # Clear gamepad
-        gctrl.gamepad.fill(COLOR_WHITE)
+        gctrl.surface.fill(COLOR_WHITE)
 
         # Draw board
         board.draw()
@@ -232,13 +234,13 @@ def test_game() :
 
 def start_game() :
     # Clear gamepad
-    gctrl.gamepad.fill(COLOR_WHITE)
+    gctrl.surface.fill(COLOR_WHITE)
 
     font = pygame.font.Font('freesansbold.ttf', 20)
     text_suf = font.render(TITLE_STR, True, COLOR_BLACK)
     text_rect = text_suf.get_rect()
-    text_rect.center = ((gctrl.pad_width / 2), (gctrl.pad_height / 2))
-    gctrl.gamepad.blit(text_suf, text_rect)
+    text_rect.center = ((gctrl.width / 2), (gctrl.height / 2))
+    gctrl.surface.blit(text_suf, text_rect)
 
     help_str = ['r : run game',
                 't : test game',
@@ -249,8 +251,8 @@ def start_game() :
         text_suf1 = font1.render(help, True, COLOR_BLUE)
         text_rect1 = text_suf1.get_rect()
         text_rect1.top = text_rect.bottom + 50 + i * 25
-        text_rect1.centerx = gctrl.pad_width / 2
-        gctrl.gamepad.blit(text_suf1, text_rect1)
+        text_rect1.centerx = gctrl.width / 2
+        gctrl.surface.blit(text_suf1, text_rect1)
 
     while True :
         for event in pygame.event.get():
@@ -282,7 +284,7 @@ def init_game() :
         board.add_objet(resource_key, game_object(0, 0, get_tile_resource(resource_key)))
 
     (pad_width, pad_height) = board.get_padsize()
-    gctrl.set_param(pygame.display.set_mode((pad_width, pad_height)), pad_width, pad_height)
+    gctrl.set_surface(pygame.display.set_mode((pad_width, pad_height)))
     pygame.display.set_caption(TITLE_STR)
 
 if __name__ == '__main__' :

@@ -49,11 +49,11 @@ class cursor_object :
 
     def draw_rect(self, color, width) :
         cursor_rect = self.map.get_map_rect(self.x, self.y)
-        pygame.draw.rect(gctrl.gamepad, color, cursor_rect, width, 3)
+        pygame.draw.rect(gctrl.surface, color, cursor_rect, width, 3)
 
     def draw_circle(self, color) :
         cursor_rect = self.map.get_map_rect(self.x, self.y)
-        pygame.draw.circle(gctrl.gamepad, color, cursor_rect.center, 3, 2)
+        pygame.draw.circle(gctrl.surface, color, cursor_rect.center, 3, 2)
 
 if __name__ == '__main__' :
     print('cursor object')
