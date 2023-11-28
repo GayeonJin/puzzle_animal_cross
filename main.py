@@ -2,14 +2,9 @@
 
 import os
 import sys
-import csv
 
 import pygame
-import random
 from time import sleep
-
-from tkinter import filedialog
-from tkinter import *
 
 from gresource import *
 from gobject import *
@@ -28,12 +23,8 @@ STATE_FILL = 4
 STATE_COMBO = 5 
 
 def draw_message(str) :
-    font = pygame.font.Font('freesansbold.ttf', 40)
-    text_suf = font.render(str, True, COLOR_BLACK)
-    text_rect = text_suf.get_rect()
-    text_rect.center = ((gctrl.width / 2), (gctrl.height / 2))
+    gctrl.draw_string(str, 0, 0, ALIGN_CENTER, 40, COLOR_BLACK)
 
-    gctrl.surface.blit(text_suf, text_rect)
     pygame.display.update()
     sleep(2)
 
@@ -42,7 +33,6 @@ def terminate() :
     sys.exit()
 
 def run_game() :
-    global clock
     global board
 
     cursor = cursor_object(board)
@@ -54,14 +44,14 @@ def run_game() :
     state = STATE_IDLE
     next_state = STATE_CHECK_ALL
 
-    edit_exit = False
-    while not edit_exit :
+    game_exit = False
+    while not game_exit :
 
         state = next_state
 
         for event in pygame.event.get() :
             if event.type == pygame.QUIT :
-                edit_exit = True
+                game_exit = True
 
             if event.type == pygame.KEYUP :
                 if event.key == pygame.K_UP:
@@ -140,10 +130,9 @@ def run_game() :
         cursor.draw_rect(COLOR_BLACK, 1)
 
         pygame.display.update()
-        clock.tick(60)
+        gctrl.clock.tick(FPS)
 
 def test_game() :
-    global clock
     global board
 
     cursor = cursor_object(board)
@@ -154,11 +143,11 @@ def test_game() :
     board.shuffle()
     state = STATE_IDLE
 
-    edit_exit = False
-    while not edit_exit :
+    test_exit = False
+    while not test_exit :
         for event in pygame.event.get() :
             if event.type == pygame.QUIT :
-                edit_exit = True
+                test_exit = True
 
             if event.type == pygame.KEYUP :
                 if event.key == pygame.K_UP:
@@ -230,29 +219,21 @@ def test_game() :
         cursor.draw_rect(COLOR_BLACK, 1)
 
         pygame.display.update()
-        clock.tick(60)
+        gctrl.clock.tick(FPS)
 
 def start_game() :
     # Clear gamepad
     gctrl.surface.fill(COLOR_WHITE)
 
-    font = pygame.font.Font('freesansbold.ttf', 20)
-    text_suf = font.render(TITLE_STR, True, COLOR_BLACK)
-    text_rect = text_suf.get_rect()
-    text_rect.center = ((gctrl.width / 2), (gctrl.height / 2))
-    gctrl.surface.blit(text_suf, text_rect)
+    gctrl.draw_string(TITLE_STR, 0, 0, ALIGN_CENTER, 30, COLOR_BLACK)
 
     help_str = ['r : run game',
                 't : test game',
                 'x : exit']
 
-    font1 = pygame.font.SysFont(None, 25)
     for i, help in enumerate(help_str) :
-        text_suf1 = font1.render(help, True, COLOR_BLUE)
-        text_rect1 = text_suf1.get_rect()
-        text_rect1.top = text_rect.bottom + 50 + i * 25
-        text_rect1.centerx = gctrl.width / 2
-        gctrl.surface.blit(text_suf1, text_rect1)
+        y_offset = 150 - i * 25
+        gctrl.draw_string(help, 0, y_offset, ALIGN_CENTER | ALIGN_BOTTOM, 25, COLOR_BLUE)
 
     while True :
         for event in pygame.event.get():
@@ -269,14 +250,10 @@ def start_game() :
                     terminate()
 
         pygame.display.update()
-        clock.tick(60)    
+        gctrl.clock.tick(FPS)    
        
 def init_game() :
-    global clock
     global board
-
-    pygame.init()
-    clock = pygame.time.Clock()
 
     # board
     board = game_board(MAX_ROWS, MAX_COLS)

@@ -2,8 +2,6 @@
 
 import sys
 import pygame
-import random
-from time import sleep
 
 from gresource import *
 
@@ -44,48 +42,9 @@ class game_object :
         self.ex = self.x + self.width - 1
         self.ey = self.y + self.height - 1
 
-    def draw(self) :
-        if self.object != None :
-            gctrl.surface.blit(self.object, (self.x, self.y))
-
     def draw(self, rect) :
         if self.object != None :
             gctrl.surface.blit(self.object, rect)
-
-    def is_out_of_range(self) :
-        if self.x <= 0 or self.x >= gctrl.width :
-            return True
-        else :
-            return False
-
-    def is_life(self) :
-        if self.life_count > 0 :
-            return True
-        else :
-            return False
-    
-    def set_life_count(self, count) :
-        self.life_count = count
-        if self.life_count > 0 :
-            self.life = True
-
-    def get_life_count(self) :
-        return self.life_count
-    
-    def kill_life(self) :
-        self.life_count -= 1
-        if self.life_count == 0 :
-            self.life = False
-            return False
-        else :
-            return True
-
-    def check_crash(self, enemy_item) :
-        if self.object != None and enemy_item.object != None :
-            if self.ex > enemy_item.x :
-                if (self.y > enemy_item.y and self.y < enemy_item.ey) or (self.ey > enemy_item.y and self.ey < enemy_item.ey) :
-                    return True
-        return False
 
 if __name__ == '__main__' :
     print('game object')
